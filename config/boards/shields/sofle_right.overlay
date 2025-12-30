@@ -19,27 +19,15 @@
         reg = <0x74>; // TPS43 I2C address (standard is 0x74)
         status = "okay";
 
-        // GPIO pins - RDY is required by driver even if not physically connected
-        // Using available pins: D4 for RDY (if your hardware has RDY, wire it here)
-        rdy-gpios = <&pro_micro 4 GPIO_ACTIVE_HIGH>;    // D4/A6
+        // MINIMAL CONFIGURATION FOR TESTING
+        // Module doesn't have RDY/RESET pins - using dummy GPIO
+        rdy-gpios = <&pro_micro 4 GPIO_ACTIVE_HIGH>;    // D4/A6 (dummy pin)
 
-        // Gesture configuration
-        one-finger-tap;      // Enable tap-to-click (left click)
-        two-finger-tap;      // Enable two-finger tap (right click)
-        press-and-hold;      // Enable press and hold for dragging
-
-        // Scroll configuration
-        scroll;              // Enable scrolling
-        natural-scroll-y;    // Natural scrolling on Y axis (like touchpad)
-        // natural-scroll-x; // Uncomment for natural X scrolling if desired
-
-        // Axis configuration - adjust based on orientation if needed
-        // switch-xy;        // Uncomment to swap X and Y axes
-        // flip-x;           // Uncomment to invert X axis
-        // flip-y;           // Uncomment to invert Y axis
-
-        // Fine-tuning parameters
-        bottom-beta = <5>;            // Filter smoothness (0-255, default 5)
-        stationary-threshold = <5>;   // Movement threshold in pixels (default 5)
+        // Start with just basic movement - no gestures
+        // Uncomment features one at a time after basic movement works:
+        // one-finger-tap;      // Enable tap-to-click (left click)
+        // two-finger-tap;      // Enable two-finger tap (right click)
+        // press-and-hold;      // Enable press and hold for dragging
+        // scroll;              // Enable scrolling
     };
 };
