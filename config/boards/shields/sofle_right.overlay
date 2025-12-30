@@ -14,9 +14,9 @@
     // I2C bus is already configured for OLED in sofle.dtsi
     // Adding TPS43 trackpad to the same bus
 
-    trackpad: iqs5xx@67 {
+    trackpad: iqs5xx@74 {
         compatible = "azoteq,iqs5xx";
-        reg = <0x67>; // TPS43 I2C address - try 0x67 or 0x74 depending on your module
+        reg = <0x74>; // TPS43 I2C address (standard is 0x74)
         status = "okay";
 
         // GPIO pins - RDY is required by driver even if not physically connected
