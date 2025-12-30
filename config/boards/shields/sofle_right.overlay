@@ -1,8 +1,13 @@
 // Azoteq TPS43 trackpad configuration for right side
-// Uses the same I2C bus as the OLED (pro_micro_i2c = i2c0)
+// Right side has NO OLED, only trackpad on I2C bus
 // SDA: P0.17 (D2), SCL: P0.20 (D3)
 
 / {
+    // Remove OLED from chosen on right side (it's only on left)
+    chosen {
+        zephyr,display = &none;
+    };
+
     // Input split device for trackpad in split keyboard setup
     trackpad_split: trackpad_split {
         compatible = "zmk,input-split";
@@ -10,9 +15,13 @@
     };
 };
 
+// Disable OLED on right side since it doesn't exist
+&oled {
+    status = "disabled";
+};
+
 &pro_micro_i2c {
-    // I2C bus is already configured for OLED in sofle.dtsi
-    // Adding TPS43 trackpad to the same bus
+    // I2C bus - no OLED on right side, only trackpad
 
     trackpad: iqs5xx@74 {
         compatible = "azoteq,iqs5xx";
