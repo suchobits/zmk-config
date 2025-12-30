@@ -19,7 +19,9 @@
         reg = <0x74>; // TPS43 uses 0x74 I2C address (7-bit)
         status = "okay";
 
-        // Note: This TPS43 module only uses SDA/SCL (no RDY/RESET pins needed)
+        // GPIO pins - RDY is required by driver even if not physically connected
+        // Using available pins: D4 for RDY (if your hardware has RDY, wire it here)
+        rdy-gpios = <&pro_micro 4 GPIO_ACTIVE_HIGH>;    // D4/A6
 
         // Gesture configuration
         one-finger-tap;      // Enable tap-to-click (left click)
