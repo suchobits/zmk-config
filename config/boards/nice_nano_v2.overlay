@@ -35,8 +35,8 @@
         spi-one-frame = <0x70>;
         spi-zero-frame = <0x40>;
 
-        /* SK6812 MINI E color order (RGB) */
-        color-mapping = <LED_COLOR_ID_RED LED_COLOR_ID_GREEN LED_COLOR_ID_BLUE>;
+        /* SK6812 MINI E color order - try GRB if RGB shows green tint */
+        color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
     };
 };
 
