@@ -29,10 +29,10 @@
         status = "okay";
 
         // REQUIRED: Driver needs both RDY and RESET GPIOs
-        // Using P0.06 and P0.08 (available if UART not needed, per Research.md)
-        // If these conflict, try back pads: P1.04, P1.02, P1.00
-        reset-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
-        rdy-gpios = <&gpio0 8 GPIO_ACTIVE_HIGH>;
+        // Using back pad pins that don't conflict with encoders or other peripherals
+        // Pro Micro pin 18 = P1.04, pin 19 = P1.02
+        reset-gpios = <&pro_micro 18 GPIO_ACTIVE_LOW>;
+        rdy-gpios = <&pro_micro 19 GPIO_ACTIVE_HIGH>;
 
         // Start with just basic movement - no gestures
         // Uncomment features one at a time after basic movement works:
