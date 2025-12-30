@@ -35,16 +35,8 @@
         spi-one-frame = <0x70>;
         spi-zero-frame = <0x40>;
 
-        /* SK6812 MINI E color order - testing BGR */
-        /* Try these if colors are wrong:
-         * RGB: <LED_COLOR_ID_RED LED_COLOR_ID_GREEN LED_COLOR_ID_BLUE>
-         * GRB: <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>
-         * BGR: <LED_COLOR_ID_BLUE LED_COLOR_ID_GREEN LED_COLOR_ID_RED>
-         * BRG: <LED_COLOR_ID_BLUE LED_COLOR_ID_RED LED_COLOR_ID_GREEN>
-         * GBR: <LED_COLOR_ID_GREEN LED_COLOR_ID_BLUE LED_COLOR_ID_RED>
-         * RBG: <LED_COLOR_ID_RED LED_COLOR_ID_BLUE LED_COLOR_ID_GREEN>
-         */
-        color-mapping = <LED_COLOR_ID_BLUE LED_COLOR_ID_GREEN LED_COLOR_ID_RED>;
+        /* SK6812 MINI E color order - RBG */
+        color-mapping = <LED_COLOR_ID_RED LED_COLOR_ID_BLUE LED_COLOR_ID_GREEN>;
     };
 };
 
