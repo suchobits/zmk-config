@@ -1,0 +1,16 @@
+// Azoteq TPS43 trackpad configuration for right side
+// Uses the same I2C bus as the OLED (pro_micro_i2c = i2c0)
+// SDA: P0.17, SCL: P0.20
+
+&pro_micro_i2c {
+    // I2C bus is already configured for OLED in sofle.dtsi
+    // Adding trackpad to the same bus
+
+    trackpad: tps43@67 {
+        compatible = "azoteq,tps43";
+        reg = <0x67>; // TPS43 default I2C address is 0x67
+        // Additional trackpad configuration will go here
+        // Note: ZMK doesn't have native TPS43 support yet
+        // This will require custom driver implementation
+    };
+};
