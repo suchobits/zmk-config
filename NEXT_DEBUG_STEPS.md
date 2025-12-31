@@ -2,7 +2,8 @@
 
 ## Current Status
 **Problem**: System completely freezes after ONE mouse movement
-- Last working commit: 7bdff74 (driver), 932a682 (config)
+- Last commit: 8ae25ee (driver), 8206a43 (config)
+- Latest build: Run #20627502136 (Phase 1B - Always-print debug)
 - Symptom: Logs stop completely after `zmk_hid_mouse_movement_set`
 - Not just trackpad - entire system (BLE, logging, everything) freezes
 
@@ -17,12 +18,107 @@
 
 ## The Plan - Three-Phase Debug
 
-### Phase 1: Pinpoint Exact Freeze Line (CURRENT)
+### Phase 1: Pinpoint Exact Freeze Line (COMPLETED)
 **Goal**: Determine which exact line causes the freeze
 
-**Method**: Add printk before and after every critical operation in movement reporting
+**Status**: ✅ COMPLETED - See results in CURRENT_SESSION_DEBUG.md
 
-**Implementation**:
+**Result**: Work handler completes successfully! Freeze happens AFTER our code returns.
+
+**Key Discovery**:
+- All our printk messages appeared up to "After end_comm_window returned"
+- ZMK's `zmk_hid_mouse_movement_set` was called successfully
+- Then complete system freeze
+- Work handler completion message didn't print (but was conditional, so expected)
+
+**Next**: Phase 1B - Testing now with always-print debug
+
+---
+
+### Phase 1B: Always-Print Debug (CURRENT - READY TO TEST)
+**Goal**: Determine if timer keeps firing and work handler keeps returning after the freeze
+
+**Status**: 🟡 BUILD COMPLETE - Ready for testing
+
+**Changes Made** (Commit 8ae25ee):
+```c
+// Timer handler - ALWAYS print (no conditions)
+static void iqs5xx_poll_timer_handler(struct k_timer *timer) {
+    static uint32_t timer_count = 0;
+    timer_count++;
+    printk("*** IQS5XX: Timer FIRE (count: %u)\n", timer_count);
+    k_work_submit(&data->work);
+}
+
+// Work handler - ALWAYS print at exit (no conditions)
+static void iqs5xx_work_handler(struct k_work *work) {
+    // ... all work handler code ...
+
+    static uint32_t work_count = 0;
+    work_count++;
+    printk("*** IQS5XX: Work handler EXITING (count: %u)\n", work_count);
+}
+```
+
+**Expected Test Patterns**:
+
+**Pattern A - Timer Stops Firing:**
+```
+*** IQS5XX: Timer FIRE (count: 25)
+*** IQS5XX: Work handler EXITING (count: 25)
+[ZMK mouse movement logs]
+[FREEZE - no more Timer FIRE messages]
+```
+→ **Interpretation**: Something is canceling the timer (unlikely but possible)
+
+**Pattern B - Work Handler Doesn't Return:**
+```
+*** IQS5XX: Timer FIRE (count: 25)
+*** IQS5XX: After end_comm_window returned
+[ZMK mouse movement logs]
+[FREEZE - no "Work handler EXITING" message]
+*** IQS5XX: Timer FIRE (count: 26)  ← Timer keeps firing!
+[No more work completions]
+```
+→ **Interpretation**: Work handler is hanging between end_comm_window and exit
+→ **Likely cause**: printk() itself is blocking, or work queue corrupted
+
+**Pattern C - Both Continue (Most Likely):**
+```
+*** IQS5XX: Timer FIRE (count: 25)
+*** IQS5XX: Work handler EXITING (count: 25)
+[ZMK mouse movement logs]
+[FREEZE - but our driver messages continue]
+*** IQS5XX: Timer FIRE (count: 26)
+*** IQS5XX: Work handler EXITING (count: 26)
+*** IQS5XX: Timer FIRE (count: 27)
+*** IQS5XX: Work handler EXITING (count: 27)
+[Our messages continue, but no ZMK logs, no keypresses work]
+```
+→ **Interpretation**: Our driver is working fine, ZMK's HID/USB stack has crashed
+→ **Likely cause**: USB HID and USB CDC conflict
+
+**Pattern D - Immediate Stop (Catastrophic):**
+```
+*** IQS5XX: Timer FIRE (count: 25)
+[ZMK mouse movement logs]
+[COMPLETE FREEZE - no timer, no work handler, nothing]
+```
+→ **Interpretation**: System-level crash (kernel panic, watchdog, etc.)
+→ **Need to check for**: Assertions, stack overflow, memory corruption
+
+**Testing Instructions**:
+1. Download artifacts from Run #20627502136
+2. Flash `sofle_right_debug.uf2`
+3. Connect USB serial IMMEDIATELY after flash
+4. Touch trackpad to trigger movement
+5. **Keep logging for at least 10 seconds after freeze** to see if timer/work continues
+6. Note which pattern appears in the logs
+
+**Files Modified**:
+- `/Users/lrs/zmk-driver-workspace/zmk-driver-azoteq-iqs5xx/drivers/input/iqs5xx.c` - Lines 75-80, 254-258
+
+**Original Implementation**:
 ```c
 // In work handler around line 233-243:
 if (rel_x != 0 || rel_y != 0) {
@@ -190,10 +286,13 @@ When analyzing logs, look for:
 2. `CURRENT_SESSION_DEBUG.md` - for what we've tried and learned
 3. Look for **Phase 1** section above to see current step
 
-**Current task**: Adding granular printk to pinpoint freeze location in work handler
+**Current task**: Phase 1B - Testing firmware with always-print debug to determine if timer/work continues after freeze
 
-**Last known state**: System freezes after one mouse movement at `input_report_rel()` call
+**Last known state**:
+- Phase 1 COMPLETED - Work handler completes successfully, freeze happens in ZMK after `zmk_hid_mouse_movement_set`
+- Phase 1B BUILD COMPLETE - Firmware ready with unconditional timer/work debug output
+- Waiting for test results to determine which pattern appears (A, B, C, or D)
 
-**Files to modify**: `iqs5xx.c` - add printk before/after input_report_rel() calls
+**Next action**: Flash and test Phase 1B firmware (Run #20627502136), observe logs for 10+ seconds after freeze
 
-**Don't repeat**: Device tree checks, logging subsystem fixes, K_FOREVER fixes - these are done
+**Don't repeat**: Device tree checks, logging subsystem fixes, K_FOREVER fixes, Phase 1 granular printk - these are done
