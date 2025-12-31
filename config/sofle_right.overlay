@@ -26,9 +26,7 @@
         reg = <0x74>;
         status = "okay";
 
-        // PROBLEM: Driver requires rdy-gpios but TPS43 breakout doesn't expose this pin
-        // These are dummy pins - driver will fail initialization without physical RDY connection
-        reset-gpios = <&pro_micro 4 GPIO_ACTIVE_LOW>;
-        rdy-gpios = <&pro_micro 5 GPIO_ACTIVE_HIGH>;
+        // Testing without GPIO pins to see if driver attempts I2C init
+        // Driver will likely still fail but we should see I2C messages
     };
 };
