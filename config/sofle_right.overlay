@@ -28,5 +28,9 @@
 
         // Polling mode - no GPIO pins needed
         // Successfully implemented polling mode for hardware without RDY pin
+
+        // Flip axes for natural cursor movement
+        flip-x;
+        flip-y;
     };
 };
