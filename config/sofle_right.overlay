@@ -19,14 +19,14 @@
 
 &pro_micro_i2c {
     status = "okay";
-    clock-frequency = <I2C_BITRATE_STANDARD>;  // Try 100kHz instead of 400kHz
+    clock-frequency = <I2C_BITRATE_STANDARD>;  // Use 100kHz for stability
 
-    trackpad: iqs5xx@67 {
+    trackpad: iqs5xx@74 {
         compatible = "azoteq,iqs5xx";
-        reg = <0x67>;  // Try alternate I2C address (some TPS43 modules use 0x67)
+        reg = <0x74>;  // TPS43 standard I2C address
         status = "okay";
 
         // Polling mode - no GPIO pins needed
-        // Testing alternate I2C address - some IQS5xx modules use 0x67 instead of 0x74
+        // Successfully implemented polling mode for hardware without RDY pin
     };
 };
