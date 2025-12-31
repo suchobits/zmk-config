@@ -21,12 +21,12 @@
     status = "okay";
     clock-frequency = <I2C_BITRATE_STANDARD>;  // Try 100kHz instead of 400kHz
 
-    trackpad: iqs5xx@74 {
+    trackpad: iqs5xx@67 {
         compatible = "azoteq,iqs5xx";
-        reg = <0x74>;
+        reg = <0x67>;  // Try alternate I2C address (some TPS43 modules use 0x67)
         status = "okay";
 
         // Polling mode - no GPIO pins needed
-        // Testing with slower I2C speed to rule out timing issues
+        // Testing alternate I2C address - some IQS5xx modules use 0x67 instead of 0x74
     };
 };
