@@ -32,5 +32,11 @@
         // Flip axes for natural cursor movement
         flip-x;
         flip-y;
+
+        // Gesture features
+        one-finger-tap;      // Tap to left-click
+        two-finger-tap;      // Two-finger tap for right-click
+        scroll;              // Two-finger scroll
+        natural-scroll-y;    // Natural vertical scroll (content tracks finger)
     };
 };
