@@ -34,7 +34,8 @@
         flip-y;
 
         // Gesture features
-        one-finger-tap;      // Tap to left-click
+        one-finger-tap;      // Quick tap for left-click
+        press-and-hold;      // Press and hold for click-and-drag
         two-finger-tap;      // Two-finger tap for right-click
         scroll;              // Two-finger scroll
         natural-scroll-y;    // Natural vertical scroll (content tracks finger)
